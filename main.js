@@ -1,6 +1,7 @@
 // Importar Firebase y Firestore
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
+import { initializeApp } from "./node_modules/firebase/app/dist/index.esm.js";
+import { getFirestore, collection, addDoc, getDocs } from "./node_modules/firebase/firestore/dist/index.esm.js";
+
 
 // Configuración de Firebase
 const firebaseConfig = {
@@ -40,14 +41,20 @@ usuarioForm.addEventListener("submit", async (e) => {
 
 // Función para mostrar los usuarios
 async function mostrarUsuarios() {
-    listaUsuarios.innerHTML = ""; // Limpiar la lista
-    const querySnapshot = await getDocs(collection(db, "usuarios"));
-    querySnapshot.forEach((doc) => {
-        const li = document.createElement("li");
-        li.textContent = `${doc.data().nombre} (Edad: ${doc.data().edad}, Email: ${doc.data().email})`;
-        listaUsuarios.appendChild(li);
-    });
+    try {
+        listaUsuarios.innerHTML = ""; // Limpiar la lista antes de agregar los datos
+        const querySnapshot = await getDocs(collection(db, "usuarios"));
+        querySnapshot.forEach((doc) => {
+            const li = document.createElement("li");
+            li.textContent = `${doc.data().nombre} (Edad: ${doc.data().edad}, Email: ${doc.data().email})`;
+            listaUsuarios.appendChild(li);
+        });
+        console.log("Datos cargados correctamente");
+    } catch (error) {
+        console.error("Error al cargar usuarios:", error);
+    }
 }
+
 
 // Mostrar usuarios al cargar la página
 mostrarUsuarios();
