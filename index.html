@@ -1,9 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usuarios Firebase</title>
+</head>
+<body>
+  <!-- Contenedor para mostrar la lista de usuarios -->
+  <ul id="lista-usuarios"></ul>
+
+  <!-- Aquí puedes agregar un formulario o botones para agregar usuarios -->
+</body>
+</html>
 <script type="module">
-    // Firebase App (necesario para inicializar Firebase)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
   
-    // Tu configuración de Firebase
+    // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyB8LhpDCAGl85NPAV94LTEpkFHwW9E35lc",
       authDomain: "pagina-base-datos.firebaseapp.com",
@@ -14,38 +27,47 @@
       measurementId: "G-T518KX7GQQ"
     };
   
-    // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+  
+    // Función para mostrar usuarios
+    async function mostrarUsuarios() {
+      try {
+        const listaUsuarios = document.getElementById("lista-usuarios");
+        if (!listaUsuarios) throw new Error("El contenedor 'lista-usuarios' no existe.");
+        listaUsuarios.innerHTML = "";
+  
+        const querySnapshot = await getDocs(collection(db, "usuarios"));
+        querySnapshot.forEach((doc) => {
+          const li = document.createElement("li");
+          li.textContent = `${doc.data().nombre} (Edad: ${doc.data().edad}, Email: ${doc.data().email})`;
+          listaUsuarios.appendChild(li);
+        });
+  
+        console.log("Datos cargados correctamente.");
+      } catch (error) {
+        console.error("Error al cargar usuarios:", error);
+      }
+    }
   
     // Función para agregar usuarios
     async function agregarUsuario(nombre, edad, email) {
       try {
         await addDoc(collection(db, "usuarios"), { nombre, edad, email });
         console.log(`Usuario ${nombre} agregado correctamente.`);
-        mostrarUsuarios();
+        mostrarUsuarios(); // Actualizar la lista después de agregar
       } catch (e) {
         console.error("Error al agregar el usuario:", e);
       }
     }
   
-    // Función para mostrar usuarios
-    async function mostrarUsuarios() {
-      const listaUsuarios = document.getElementById("lista-usuarios");
-      listaUsuarios.innerHTML = "";
-      const querySnapshot = await getDocs(collection(db, "usuarios"));
-      querySnapshot.forEach((doc) => {
-        const li = document.createElement("li");
-        li.textContent = `${doc.data().nombre} (Edad: ${doc.data().edad}, Email: ${doc.data().email})`;
-        listaUsuarios.appendChild(li);
-      });
-    }
+    // Llamar a mostrarUsuarios al cargar la página
+    document.addEventListener("DOMContentLoaded", () => {
+      mostrarUsuarios();
+    });
   
-    // Llamar a mostrarUsuarios al cargar
-    mostrarUsuarios();
-  
-    // Ejemplo: Agregar usuarios (puedes conectarlo a un formulario)
-    agregarUsuario("Lara", 30, "lara@example.com");
-    agregarUsuario("Larita", 25, "larita@example.com");
+    // Ejemplo: Llama a agregarUsuario manualmente desde la consola del navegador para evitar duplicados
+    // agregarUsuario("Lara", 30, "lara@example.com");
+    // agregarUsuario("Larita", 25, "larita@example.com");
   </script>
   
