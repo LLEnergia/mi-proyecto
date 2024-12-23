@@ -40,21 +40,27 @@ usuarioForm.addEventListener("submit", async (e) => {
 });
 
 // Función para mostrar los usuarios
+import { getDocs, collection } from "./node_modules/firebase/firestore/dist/index.esm.js";
+
 async function mostrarUsuarios() {
-    try {
-        listaUsuarios.innerHTML = ""; // Limpiar la lista antes de agregar los datos
-        const querySnapshot = await getDocs(collection(db, "usuarios"));
-        querySnapshot.forEach((doc) => {
-            const li = document.createElement("li");
-            li.textContent = `${doc.data().nombre} (Edad: ${doc.data().edad}, Email: ${doc.data().email})`;
-            listaUsuarios.appendChild(li);
-        });
-        console.log("Datos cargados correctamente");
-    } catch (error) {
-        console.error("Error al cargar usuarios:", error);
-    }
+  try {
+    const listaUsuarios = document.getElementById("lista-usuarios"); // Asegúrate de que este ID exista en tu HTML
+    listaUsuarios.innerHTML = ""; // Limpiar la lista antes de agregar los datos
+    
+    const querySnapshot = await getDocs(collection(db, "usuarios")); // Leer documentos
+    querySnapshot.forEach((doc) => {
+      // Crear un elemento <li> para cada usuario
+      const li = document.createElement("li");
+      li.textContent = `${doc.data().nombre} (Edad: ${doc.data().edad}, Email: ${doc.data().email})`;
+      listaUsuarios.appendChild(li);
+    });
+    
+    console.log("Datos cargados correctamente.");
+  } catch (error) {
+    console.error("Error al cargar usuarios:", error);
+  }
 }
 
-
-// Mostrar usuarios al cargar la página
+// Llamar la función al cargar la página
 mostrarUsuarios();
+
