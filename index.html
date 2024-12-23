@@ -1,21 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firebase y Firestore</title>
-</head>
-<body>
-    <h1>Firebase Firestore - Usuarios</h1>
-    <form id="usuarioForm">
-        <input type="text" id="nombre" placeholder="Nombre" required />
-        <input type="number" id="edad" placeholder="Edad" required />
-        <input type="email" id="email" placeholder="Email" required />
-        <button type="submit">Agregar Usuario</button>
-    </form>
-    <h2>Lista de Usuarios</h2>
-    <ul id="listaUsuarios"></ul>
-
-    <script type="module" src="main.js"></script>
-</body>
-</html>
+<script type="module">
+    // Firebase App (necesario para inicializar Firebase)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+  
+    // Tu configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8LhpDCAGl85NPAV94LTEpkFHwW9E35lc",
+      authDomain: "pagina-base-datos.firebaseapp.com",
+      projectId: "pagina-base-datos",
+      storageBucket: "pagina-base-datos.firebasestorage.app",
+      messagingSenderId: "874294350411",
+      appId: "1:874294350411:web:0fdf960bd45c2141a333ce",
+      measurementId: "G-T518KX7GQQ"
+    };
+  
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+  
+    // Función para agregar usuarios
+    async function agregarUsuario(nombre, edad, email) {
+      try {
+        await addDoc(collection(db, "usuarios"), { nombre, edad, email });
+        console.log(`Usuario ${nombre} agregado correctamente.`);
+        mostrarUsuarios();
+      } catch (e) {
+        console.error("Error al agregar el usuario:", e);
+      }
+    }
+  
+    // Función para mostrar usuarios
+    async function mostrarUsuarios() {
+      const listaUsuarios = document.getElementById("lista-usuarios");
+      listaUsuarios.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "usuarios"));
+      querySnapshot.forEach((doc) => {
+        const li = document.createElement("li");
+        li.textContent = `${doc.data().nombre} (Edad: ${doc.data().edad}, Email: ${doc.data().email})`;
+        listaUsuarios.appendChild(li);
+      });
+    }
+  
+    // Llamar a mostrarUsuarios al cargar
+    mostrarUsuarios();
+  
+    // Ejemplo: Agregar usuarios (puedes conectarlo a un formulario)
+    agregarUsuario("Lara", 30, "lara@example.com");
+    agregarUsuario("Larita", 25, "larita@example.com");
+  </script>
+  
